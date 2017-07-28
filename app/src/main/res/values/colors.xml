@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <string-array name="block_color_array">
+        <item >#22ffff</item>
+        <item >#22fff0</item>
+        <item >#22ffe0</item>
+        <item >#22ffd0</item>
+        <item >#22ffc0</item>
+        <item >#22ffb0</item>
+        <item >#22ffa0</item>
+        <item >#23ff90</item>
+        <item >#24ff80</item>
+        <item >#24ff70</item>
+
+        <item >#24ff60</item>
+        <item >#24ff50</item>
+        <item >#24ff40</item>
+        <item >#24ff30</item>
+        <item >#24ff20</item>
+        <item >#24ff20</item>
+        <item >#24ff10</item>
+        <item >#04ff00</item>
+        <item >#14ff00</item>
+        <item >#24ff00</item>
+
+        <item >#35ff22</item>
+        <item >#45ff22</item>
+        <item >#55ff22</item>
+        <item >#65ff22</item>
+        <item >#75ff22</item>
+        <item >#85ff22</item>
+        <item >#95ff22</item>
+        <item >#a5ff22</item>
+        <item >#b5ff22</item>
+        <item >#c5ff22</item>
+
+        <item >#e5ff22</item>
+        <item >#f5ff22</item>
+        <item >#f8ff00</item>
+        <item >#ffff00</item>
+        <item >#fffe06</item>
+        <item >#ffee06</item>
+        <item >#ffde06</item>
+        <item >#ffce06</item>
+        <item >#ffbe06</item>
+        <item >#ffae06</item>
+
+        <item >#ff9a17</item>
+        <item >#ff8a17</item>
+        <item >#ff7a17</item>
+        <item >#ff6a17</item>
+        <item >#ff5a17</item>
+        <item >#ff4a17</item>
+        <item >#ff3a17</item>
+        <item >#ff2a17</item>
+        <item >#ff1a17</item>
+        <item >#ff0a17</item>
+
+    </string-array>
+</resources>

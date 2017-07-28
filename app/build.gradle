@@ -1,0 +1,80 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "com.cpxiao.snakevsblocks"
+        minSdkVersion 9
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled true //混淆
+            shrinkResources true // 移除无用的resource文件
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    //友盟多渠道打包
+    productFlavors {
+        gp {}
+    }
+    productFlavors.all {
+        flavor -> flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
+    }
+
+    //修改生成的apk名字
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def oldFile = output.outputFile
+            def packageName = applicationId;
+            if (variant.buildType.name.equals('release')) {
+                def releaseApkName = packageName +
+                        "_v" + defaultConfig.versionName +
+                        "_" + variant.productFlavors[0].name +
+                        "_" + new Date().format("yyyyMMddHHmm") + '.apk'
+                output.outputFile = new File(oldFile.parent, releaseApkName)
+            }
+            if (variant.buildType.name.equals('beta')) {
+                def baseApkName = packageName +
+                        "_v" + defaultConfig.versionName + "beta" +
+                        "_" + variant.productFlavors[0].name +
+                        "_" + new Date().format("yyyyMMddHHmm") + '.apk'
+                output.outputFile = new File(oldFile.parent, baseApkName)
+            }
+            if (variant.buildType.name.equals('debug')) {
+
+            }
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    /**
+     * Ads Start
+     */
+    //友盟统计
+    compile 'com.umeng.analytics:analytics:latest.integration'
+    //Facebook广告
+    compile files('libs/AudienceNetwork_v4.7.jar')
+    //AdMob广告
+    compile 'com.google.firebase:firebase-ads:9.4.0'
+//    compile 'com.google.firebase:firebase-ads:11.0.1'
+    /**
+     * Ads End
+     */
+
+    //    compile fileTree(dir: 'libs', include: ['*.jar'])
+    //    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    //        exclude group: 'com.android.support', module: 'support-annotations'
+    //    })
+
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    //    testCompile 'junit:junit:4.12'
+    compile project(':AndroidUtils:library')
+}
+
+apply plugin: 'com.google.gms.google-services'
