@@ -1,10 +1,10 @@
-package com.cpxiao.snakevsblocks.mode;
+package com.cpxiao.snakepkblock.mode;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.cpxiao.snakevsblocks.mode.common.LifeSprite;
+import com.cpxiao.snakepkblock.mode.common.LifeSprite;
 
 /**
  * 原点食物类

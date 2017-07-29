@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:859570284597:android:a66a39b6efdc10fc",
+        "mobilesdk_app_id": "1:859570284597:android:d8f38ca373525e75",
         "android_client_info": {
-          "package_name": "com.cpxiao.snakevsblocks"
+          "package_name": "com.cpxiao.snake.pk.block"
         }
       },
       "oauth_client": [

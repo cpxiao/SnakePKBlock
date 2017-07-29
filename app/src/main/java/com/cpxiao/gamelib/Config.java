@@ -7,6 +7,6 @@ public class Config {
     /**
      * debug
      */
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
 }

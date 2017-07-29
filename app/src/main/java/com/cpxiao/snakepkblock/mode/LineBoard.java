@@ -1,9 +1,9 @@
-package com.cpxiao.snakevsblocks.mode;
+package com.cpxiao.snakepkblock.mode;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-import com.cpxiao.snakevsblocks.mode.common.AutoSprite;
+import com.cpxiao.snakepkblock.mode.common.AutoSprite;
 
 /**
  * 隔板，不能越过

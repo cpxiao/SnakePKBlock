@@ -1,11 +1,11 @@
-package com.cpxiao.snakevsblocks.mode;
+package com.cpxiao.snakepkblock.mode;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
-import com.cpxiao.snakevsblocks.mode.common.LifeSprite;
+import com.cpxiao.snakepkblock.mode.common.LifeSprite;
 
 /**
  * 方块类

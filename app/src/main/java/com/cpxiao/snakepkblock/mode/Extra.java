@@ -1,8 +1,7 @@
-package com.cpxiao.snakevsblocks.mode;
+package com.cpxiao.snakepkblock.mode;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 
 import com.cpxiao.R;
 

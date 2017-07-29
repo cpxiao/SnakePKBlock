@@ -1,4 +1,4 @@
-package com.cpxiao.snakevsblocks;
+package com.cpxiao.snakepkblock;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -13,13 +13,13 @@ import android.view.MotionEvent;
 import com.cpxiao.R;
 import com.cpxiao.androidutils.library.utils.PreferencesUtils;
 import com.cpxiao.gamelib.views.BaseSurfaceViewFPS;
-import com.cpxiao.snakevsblocks.mode.Block;
-import com.cpxiao.snakevsblocks.mode.Circle;
-import com.cpxiao.snakevsblocks.mode.Extra;
-import com.cpxiao.snakevsblocks.mode.LineBoard;
-import com.cpxiao.snakevsblocks.mode.Snake;
-import com.cpxiao.snakevsblocks.mode.common.AutoSprite;
-import com.cpxiao.snakevsblocks.mode.common.Sprite;
+import com.cpxiao.snakepkblock.mode.Block;
+import com.cpxiao.snakepkblock.mode.Circle;
+import com.cpxiao.snakepkblock.mode.Extra;
+import com.cpxiao.snakepkblock.mode.LineBoard;
+import com.cpxiao.snakepkblock.mode.Snake;
+import com.cpxiao.snakepkblock.mode.common.AutoSprite;
+import com.cpxiao.snakepkblock.mode.common.Sprite;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -263,11 +263,11 @@ public class GameView extends BaseSurfaceViewFPS {
         float cX = 0.5f * mViewWidth;
         paint.setTextSize(0.16F * mViewWidth);
         paint.setTypeface(Typeface.DEFAULT);
-        canvas.drawText("Snake", cX, 0.12F * mViewHeight, paint);
+        canvas.drawText(getContext().getString(R.string.title_snake), cX, 0.12F * mViewHeight, paint);
         paint.setTypeface(Typeface.DEFAULT_BOLD);
-        canvas.drawText("VS", cX, 0.24F * mViewHeight, paint);
+        canvas.drawText(getContext().getString(R.string.title_pk), cX, 0.24F * mViewHeight, paint);
         paint.setTypeface(Typeface.DEFAULT);
-        canvas.drawText("Blocks", cX, 0.36F * mViewHeight, paint);
+        canvas.drawText(getContext().getString(R.string.title_block), cX, 0.36F * mViewHeight, paint);
 
     }
 

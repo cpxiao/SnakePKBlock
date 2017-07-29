@@ -1,4 +1,4 @@
-package com.cpxiao.snakevsblocks.mode.common;
+package com.cpxiao.snakepkblock.mode.common;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

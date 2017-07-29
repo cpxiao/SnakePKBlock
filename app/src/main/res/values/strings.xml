@@ -5,6 +5,9 @@
     <string name="tap_to_restart">Tap to restart</string>
     <string name="best">Best</string>
     <string name="best_score">Best Score</string>
+    <string name="title_block">Block</string>
+    <string name="title_pk">PK</string>
+    <string name="title_snake">Snake</string>
 
 
 </resources>

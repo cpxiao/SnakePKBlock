@@ -1,10 +1,10 @@
-package com.cpxiao.snakevsblocks.activity;
+package com.cpxiao.snakepkblock.activity;
 
 import android.os.Bundle;
 
 import com.cpxiao.R;
 import com.cpxiao.gamelib.activity.BaseActivity;
-import com.cpxiao.snakevsblocks.GameView;
+import com.cpxiao.snakepkblock.GameView;
 
 
 public class GameActivity extends BaseActivity {

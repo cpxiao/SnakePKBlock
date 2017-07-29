@@ -1,4 +1,4 @@
-package com.cpxiao.snakevsblocks.activity;
+package com.cpxiao.snakepkblock.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
