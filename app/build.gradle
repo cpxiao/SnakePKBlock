@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.cpxiao.snake.pk.block"
-        minSdkVersion 9
+        minSdkVersion 15
         targetSdkVersion 25
         versionCode 11
         versionName "1.1"
@@ -52,29 +52,28 @@ android {
 }
 
 dependencies {
+    compile project(':AndroidUtils:library')
     compile 'com.android.support:appcompat-v7:25.3.1'
+
     /**
      * Ads Start
      */
     //友盟统计
     compile 'com.umeng.analytics:analytics:latest.integration'
     //Facebook广告
-    compile files('libs/AudienceNetwork_v4.7.jar')
+//    compile files('libs/AudienceNetwork_v4.7.jar')
+//    compile 'com.facebook.android:audience-network-sdk:4.+'
+    compile 'com.facebook.android:audience-network-sdk:4.25.0'
     //AdMob广告
-    compile 'com.google.firebase:firebase-ads:9.4.0'
-//    compile 'com.google.firebase:firebase-ads:11.0.1'
+//    compile 'com.google.firebase:firebase-ads:9.4.0'
+    compile 'com.google.firebase:firebase-ads:11.0.0'
+    //ZAds SDK
+    compile 'com.github.bumptech.glide:glide:3.7.0'//要放在后面
     /**
      * Ads End
      */
 
-    //    compile fileTree(dir: 'libs', include: ['*.jar'])
-    //    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-    //        exclude group: 'com.android.support', module: 'support-annotations'
-    //    })
 
-//    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    //    testCompile 'junit:junit:4.12'
-    compile project(':AndroidUtils:library')
 }
 
 apply plugin: 'com.google.gms.google-services'

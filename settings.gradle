@@ -1,5 +1,5 @@
 include ':app'
 
 include ':AndroidUtils'
-project(':AndroidUtils').projectDir = new File('../AndroidUtils/')
+project(':AndroidUtils').projectDir = new File('../../AndroidUtils/')
 include ':AndroidUtils:library'

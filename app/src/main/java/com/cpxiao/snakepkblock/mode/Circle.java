@@ -4,19 +4,24 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.cpxiao.snakepkblock.mode.common.LifeSprite;
+import com.cpxiao.gamelib.mode.common.Sprite;
+import com.cpxiao.snakepkblock.mode.extra.ColorExtra;
 
 /**
- * 原点食物类
+ * 方块类
  *
- * @author cpxiao on 2017/07/16.
+ * @author cpxiao on 2017/8/21.
  */
 
-public class Circle extends LifeSprite {
+public class Circle extends Sprite {
 
-    private static final int COLOR = Extra.ColorExtra.CIRCLE_COLOR;
+    private static final int COLOR = ColorExtra.FOOD_COLOR;
 
     private boolean needDrawNumber = true;
+
+    protected Circle(Build build) {
+        super(build);
+    }
 
     public void setNeedDrawNumber(boolean needDrawNumber) {
         this.needDrawNumber = needDrawNumber;
@@ -24,8 +29,13 @@ public class Circle extends LifeSprite {
 
     @Override
     public void onDraw(Canvas canvas, Paint paint) {
+        super.onDraw(canvas, paint);
         paint.setColor(COLOR);
-        canvas.drawCircle(getCenterX(), getCenterY(), getWidth() / 2, paint);
+        if (DEBUG) {
+            paint.setColor(Color.RED);
+        }
+
+        canvas.drawCircle(getCenterX(), getCenterY(), 0.5F * getWidth(), paint);
 
         drawNumber(canvas, paint);
     }
@@ -41,6 +51,13 @@ public class Circle extends LifeSprite {
             paint.setTextSize(0.8f * getWidth());
             paint.setColor(Color.WHITE);
             canvas.drawText(String.valueOf(getLife()), getCenterX(), getY() - 0.3f * getHeight(), paint);
+        }
+    }
+
+    public static class Build extends Sprite.Build {
+        @Override
+        public Sprite build() {
+            return new Circle(this);
         }
     }
 }

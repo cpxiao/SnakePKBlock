@@ -10,24 +10,25 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.cpxiao.gamelib.Config;
+import com.cpxiao.AppConfig;
 
 
 /**
  * BaseSurfaceView
  *
  * @author cpxiao on 2016/5/31
+ * @version 2017/3/21
+ *          2017/8/17 设置画笔
  */
 public abstract class BaseSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 
-    protected static final boolean DEBUG = Config.DEBUG;
+    protected static final boolean DEBUG = AppConfig.DEBUG;
     protected final String TAG = getClass().getSimpleName();
 
     /**
      * 背景色
      */
-    private static final int BACKGROUND_COLOR = Color.WHITE;
-    private int mBackgroundColor = BACKGROUND_COLOR;
+    private int mBackgroundColor = Color.WHITE;
 
     /**
      * SurfaceHolder用于控制SurfaceView的大小、格式等，用于监听SurfaceView的状态。
@@ -73,26 +74,25 @@ public abstract class BaseSurfaceView extends SurfaceView implements SurfaceHold
         if (DEBUG) {
             Log.d(TAG, "initSurfaceView: ");
         }
-        /** 实例SurfaceHolder*/
+        /* 实例SurfaceHolder */
         mSurfaceHolder = getHolder();
 
-        /**为SurfaceView添加状态监听*/
+        /* 为SurfaceView添加状态监听 */
         mSurfaceHolder.addCallback(this);
 
-        /**实例一个画笔*/
+        /* 实例一个画笔 */
         mPaint = new Paint();
-        mPaint.setAntiAlias(true);//抗锯齿
+        mPaint.setAntiAlias(true);//抗锯齿,一般加这个就可以了，加另外两个可能会卡
         //        mPaint.setDither(true);//防抖动
         //        mPaint.setFilterBitmap(true);//用来对位图进行滤波处理
         mPaint.setTextAlign(Paint.Align.CENTER);
 
-        /**设置焦点*/
+        /* 设置焦点 */
         setFocusable(true);
     }
 
-    /**
-     * 重写SurfaceHolder.Callback接口的三个方法surfaceCreated()、surfaceChanged()、surfaceDestroyed()
-     */
+
+    /* 重写SurfaceHolder.Callback接口的三个方法surfaceCreated()、surfaceChanged()、surfaceDestroyed() */
 
     /**
      * 当SurfaceView被创建完成后响应的方法
@@ -113,13 +113,17 @@ public abstract class BaseSurfaceView extends SurfaceView implements SurfaceHold
         if (DEBUG) {
             Log.d(TAG, "surfaceChanged().........");
         }
+
+        //之前初始化就直接return
+        if (mViewWidth == width && mViewHeight == height) {
+            return;
+        }
+
         mViewWidth = width;
         mViewHeight = height;
         mViewLength = Math.min(width, height);
 
-        /**
-         * 初级化二级缓存
-         */
+        /* 初级化二级缓存 */
         mBitmapCache = Bitmap.createBitmap(mViewWidth, mViewHeight, Bitmap.Config.RGB_565);
         mCanvasCache = new Canvas(mBitmapCache);
 
@@ -152,24 +156,21 @@ public abstract class BaseSurfaceView extends SurfaceView implements SurfaceHold
         Canvas canvas = null;
         try {
             if (mSurfaceHolder != null && mBitmapCache != null && mPaint != null) {
-                /**使用SurfaceHolder.lockCanvas()获取SurfaceView的Canvas对象，并对画布加锁.*/
+                /* 使用SurfaceHolder.lockCanvas()获取SurfaceView的Canvas对象，并对画布加锁 */
                 canvas = mSurfaceHolder.lockCanvas();
-                /** 在绘制之前需要将画布清空，否则画布上会显示之前绘制的内容,以下三种方法效果一致*/
+                /* 在绘制之前需要将画布清空，否则画布上会显示之前绘制的内容,以下三种方法效果一致 */
                 //                mCanvasCache.drawRect(0, 0, getWidth(), getHeight(), new Paint());
                 //                mCanvasCache.drawRGB(255, 255, 255);
                 mCanvasCache.drawColor(mBackgroundColor);
                 drawCache();
 
                 if (canvas != null) {
-                    canvas.drawColor(mBackgroundColor);
                     canvas.drawBitmap(mBitmapCache, 0, 0, mPaint);
                 }
-                //                if (mSurfaceHolder != null) {
-                //                    mSurfaceHolder.unlockCanvasAndPost(canvas);
-                //                }
             }
         } catch (Exception e) {
             if (DEBUG) {
+                Log.d(TAG, "myDraw: e.getMessage() = " + e.getMessage());
                 e.printStackTrace();
             }
         } finally {
@@ -179,6 +180,11 @@ public abstract class BaseSurfaceView extends SurfaceView implements SurfaceHold
         }
     }
 
+    /**
+     * 设置背景色，注意要设置色值而非资源id值
+     *
+     * @param color color
+     */
     protected void setBgColor(int color) {
         mBackgroundColor = color;
     }

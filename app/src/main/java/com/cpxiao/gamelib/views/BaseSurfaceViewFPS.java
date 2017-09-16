@@ -2,20 +2,16 @@ package com.cpxiao.gamelib.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
 /**
  * BaseSurfaceViewFPS
  *
  * @author cpxiao on 2016/8/23
+ * @version 2017/3/21
+ *          2017/8/17 修改默认fps
  */
 public abstract class BaseSurfaceViewFPS extends BaseSurfaceView implements Runnable {
-
-    /**
-     * 声明一个线程
-     */
-    private Thread mThread;
 
     /**
      * 线程消亡的标志位
@@ -23,10 +19,11 @@ public abstract class BaseSurfaceViewFPS extends BaseSurfaceView implements Runn
     protected boolean isRunning = false;
 
     /**
-     * 设置FPS，默认为30
+     * 设置FPS，默认为60
      */
-    private static final int DEFAULT_FPS = 30;
-    protected int mFPS = DEFAULT_FPS;
+    protected int mFPS = 60;
+
+    protected long mFrame = 0;
 
     public BaseSurfaceViewFPS(Context context) {
         super(context);
@@ -45,9 +42,10 @@ public abstract class BaseSurfaceViewFPS extends BaseSurfaceView implements Runn
     public void surfaceCreated(SurfaceHolder holder) {
         super.surfaceCreated(holder);
         isRunning = true;
-        /**实例线程*/
-        mThread = new Thread(this);
-        mThread.start();
+
+        /* 创建一个线程 */
+        Thread thread = new Thread(this);
+        thread.start();
     }
 
     @Override
@@ -58,12 +56,12 @@ public abstract class BaseSurfaceViewFPS extends BaseSurfaceView implements Runn
 
     @Override
     public void run() {
-        Log.d(TAG, "run: ");
         while (isRunning) {
             synchronized (BaseSurfaceViewFPS.class.getSimpleName()) {
                 int deltaTime = 1000 / mFPS;
 
                 long start = System.currentTimeMillis();
+                mFrame++;
                 myDraw();
                 timingLogic();
                 long end = System.currentTimeMillis();

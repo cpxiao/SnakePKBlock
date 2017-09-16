@@ -24,7 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".snakepkblock.activity.HomeActivity"
+            android:name=".snakepkblock.activity.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -33,16 +33,16 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".snakepkblock.activity.GameActivity"
-            android:screenOrientation="portrait">
+        <!--<activity-->
+            <!--android:name=".snakepkblock.activity.GameActivity"-->
+            <!--android:screenOrientation="portrait">-->
 
-        </activity>
-        <activity
-            android:name=".snakepkblock.activity.SettingsActivity"
-            android:screenOrientation="portrait">
+        <!--</activity>-->
+        <!--<activity-->
+            <!--android:name=".snakepkblock.activity.SettingsActivity"-->
+            <!--android:screenOrientation="portrait">-->
 
-        </activity>
+        <!--</activity>-->
 
         <meta-data
             android:name="UMENG_APPKEY"
