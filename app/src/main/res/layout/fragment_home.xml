@@ -3,7 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@drawable/fragment_home_bg"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingBottom="100dp">
 
     <TextView
         android:layout_width="match_parent"
@@ -11,6 +14,7 @@
         android:gravity="center"
         android:padding="30dp"
         android:text="@string/app_name"
+        android:textColor="@android:color/white"
         android:textSize="32sp"
         />
 
@@ -20,6 +24,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/play"/>
+
+    <Button
+        android:id="@+id/best_score"
+        style="@style/HomeBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/best_score"/>
+
     <Button
         android:id="@+id/quit"
         style="@style/HomeBtn"

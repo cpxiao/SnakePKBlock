@@ -6,6 +6,7 @@ import android.view.View;
 import com.cpxiao.R;
 import com.cpxiao.gamelib.fragment.BaseZAdsFragment;
 import com.cpxiao.snakepkblock.GameView;
+import com.cpxiao.zads.core.ZAdPosition;
 
 /**
  * @author cpxiao on 2017/09/12.
@@ -25,6 +26,8 @@ public class GameFragment extends BaseZAdsFragment {
 
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
+        loadZAds(ZAdPosition.POSITION_GAME);
+
         mGameView = (GameView) view.findViewById(R.id.game_view);
     }
 

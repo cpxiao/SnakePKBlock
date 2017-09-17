@@ -7,9 +7,10 @@ android {
         applicationId "com.cpxiao.snake.pk.block"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 11
-        versionName "1.1"
+        versionCode 112
+        versionName "1.1.2"
     }
+
     buildTypes {
         release {
             minifyEnabled true //混淆
@@ -17,10 +18,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     //友盟多渠道打包
     productFlavors {
         gp {}
     }
+
     productFlavors.all {
         flavor -> flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
     }
@@ -68,11 +71,11 @@ dependencies {
 //    compile 'com.google.firebase:firebase-ads:9.4.0'
     compile 'com.google.firebase:firebase-ads:11.0.0'
     //ZAds SDK
-    compile 'com.github.bumptech.glide:glide:3.7.0'//要放在后面
+//    compile 'com.github.bumptech.glide:glide:3.7.0'//要放在前面几个库的后面
+    compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
     /**
      * Ads End
      */
-
 
 }
 

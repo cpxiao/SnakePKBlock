@@ -67,7 +67,6 @@ public class GameView extends BaseSurfaceViewFPS {
     private float mCircleWH;
     private float mBlockWH;
     private float mBoardW;
-    private float mBoardMarginTB;
     private float mSnakeTargetX, mSnakeTargetY;
 
 
@@ -120,14 +119,9 @@ public class GameView extends BaseSurfaceViewFPS {
         //初始化Circle(包含蛇和食物)宽高
         mCircleWH = 0.05F * mViewWidth;
         mBoardW = 0.015F * mViewWidth;
-        mBoardMarginTB = 0.01f * mBlockWH;
 
         mBestScore = PreferencesUtils.getInt(getContext(), Extra.Key.BEST_SCORE, 0);
 
-        //初始化速度
-        mSpeedY = 0.05F * mViewHeight / mFPS;
-        mSpeedY = 0.5F * mViewHeight / mFPS;
-        isSnakeCollideWithBlock = false;
 
         //初始化snake初始目标位置
         mSnakeTargetX = 0.5F * mViewWidth;
@@ -141,21 +135,38 @@ public class GameView extends BaseSurfaceViewFPS {
 
     @Override
     public void drawCache() {
+        if (mSnakeHead != null) {
+            mSnakeHead.setY(mSnakeTargetY);
+        }
+        removeDestroyedSprite();
+        checkBlockAndBoardCollided(mSnakeHead);
+
         if (mGameState == GameState.PREPARED) {
             mScore = 0;
+            //初始化速度
+            mSpeedY = 0.5F * mViewHeight / mFPS;
+            isSnakeCollideWithBlock = false;
+
             mSpriteQueue.clear();
             //初始化蛇
             createSnakeHead();
             createSnakeBody(5);
-            checkupSnakePosition();
+            if (DEBUG) {
+                createSnakeBody(50);
+            }
             drawPrepared(mCanvasCache, mPaint);
         } else if (mGameState == GameState.STARTED) {
+            if (mFrame % (10 * mFPS) == 0) {
+                mSpeedY += 0.2F;
+                for (Sprite sprite : mSpriteQueue) {
+                    sprite.setSpeedY(mSpeedY);
+                }
+            }
             //随机添加Sprite
             if (!isSnakeCollideWithBlock) {
                 createBlockAndFood();
                 createBoard();
             }
-            checkBlockAndBoardCollided();
             drawStarted(mCanvasCache, mPaint);
         } else if (mGameState == GameState.PARSED) {
             drawParsed(mCanvasCache, mPaint);
@@ -189,13 +200,6 @@ public class GameView extends BaseSurfaceViewFPS {
                 iterator.remove();
             }
         }
-    }
-
-    /**
-     * 初始化Snake坐标
-     */
-    private void resetSnake() {
-
     }
 
     /**
@@ -379,8 +383,7 @@ public class GameView extends BaseSurfaceViewFPS {
 
     @Override
     protected void timingLogic() {
-        mSnakeHead.setY(mSnakeTargetY);
-        removeDestroyedSprite();
+
     }
 
     private void createSnakeHead() {
@@ -393,8 +396,8 @@ public class GameView extends BaseSurfaceViewFPS {
                 .build();
     }
 
-    private void createSnakeBody(int life) {
-        if (life < 0) {
+    private synchronized void createSnakeBody(int life) {
+        if (life < 0 || mSnakeHead == null) {
             return;
         }
         for (int i = 0; i < life; i++) {
@@ -420,12 +423,12 @@ public class GameView extends BaseSurfaceViewFPS {
         mBlockAndFoodDeltaY = mBlockWH * (int) (2 + Math.random() * 2);
 
 
+        float blockProbability = 0.5F;
+        float circleProbability = 0.1F;
         for (int i = 0; i < mBlockCount; i++) {
             double random = Math.random();
-            double blockProbability = 0.5;
-            double circleProbability = 0.1;
             if (random < blockProbability) {
-                int age = (int) (Math.random() * 10);
+                int age = (int) (Math.random() * 10 + Math.random() * Math.max(getSnakeBodyList().size(), 20) / 3);
                 Block block = (Block) new Block.Build()
                         .setW(mBlockWH)
                         .setH(mBlockWH)
@@ -459,34 +462,33 @@ public class GameView extends BaseSurfaceViewFPS {
         mLastBoardY = 0;
         mBoardDeltaY = mBlockWH * (int) (2 + Math.random() * 2);
 
+        float board1Probability = 0.6F;
+        float board2Probability = 0.2F;
         for (int i = 0; i < mBlockCount; i++) {
             double random = Math.random();
-            double line1Probability = 0.1;
-            double line2Probability = 0.1;
-            if (random < line1Probability) {
-                int index = (int) (Math.random() * 100 % (mBlockCount - 1));
-                Board board = (Board) new Board.Build()
-                        .setW(mBoardW)
-                        .setH(mBlockWH - 2 * mBoardMarginTB)
-                        .centerTo((index + 1) * mBlockWH, -0.5f * mBlockWH)
-                        .setSpeedY(mSpeedY)
-                        .build();
-                mSpriteQueue.add(board);
-            } else if (random < line1Probability + line2Probability) {
-                int index = (int) (Math.random() * 100 % (mBlockCount - 1));
-                Board board = (Board) new Board.Build()
-                        .setW(mBoardW)
-                        .setH(mBlockWH * 2 - 2 * mBoardMarginTB)
-                        .centerTo((index + 1) * mBlockWH, -1.0f * mBlockWH)
-                        .setSpeedY(mSpeedY)
-                        .build();
-                mSpriteQueue.add(board);
+            int index = (int) (Math.random() * 100 % (mBlockCount - 1));
+            int height;
+
+            if (random < board1Probability) {
+                height = 1;
+            } else if (random < board1Probability + board2Probability) {
+                height = 2;
+            } else {
+                return;
             }
+            Board board = (Board) new Board.Build()
+                    .setW(mBoardW)
+                    .setH(mBlockWH * height)
+                    .centerTo((index + 1) * mBlockWH, -0.5f * height * mBlockWH)
+                    .setSpeedY(mSpeedY)
+                    .build();
+            board.setCollideRectFPercent(0, 1);
+            mSpriteQueue.add(board);
         }
     }
 
 
-    float mLastTouchX = 0;
+    private float mLastTouchX = 0;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -515,23 +517,24 @@ public class GameView extends BaseSurfaceViewFPS {
 
 
         //重置snake位置，防止越界
-        checkBlockAndBoardCollided();
+        //        checkBlockAndBoardCollided();
 
+        SnakeHead snakeHead = mSnakeHead;
         if (action == MotionEvent.ACTION_DOWN) {
             mLastTouchX = event.getX();
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
             float delta = event.getX() - mLastTouchX;
-            RectF snakeMovingRangeRectF = mSnakeHead.getMovingRangeRectF();
+            RectF snakeMovingRangeRectF = snakeHead.getMovingRangeRectF();
             if (delta > 0) {
-                if (mSnakeHead.getX() + mSnakeHead.getWidth() + delta > snakeMovingRangeRectF.right) {
-                    delta = snakeMovingRangeRectF.right - (mSnakeHead.getX() + mSnakeHead.getWidth());
+                if (snakeHead.getX() + snakeHead.getWidth() + delta > snakeMovingRangeRectF.right) {
+                    delta = snakeMovingRangeRectF.right - (snakeHead.getX() + snakeHead.getWidth());
                 }
             } else {
-                if (mSnakeHead.getX() + delta < snakeMovingRangeRectF.left) {
-                    delta = snakeMovingRangeRectF.left - mSnakeHead.getX();
+                if (snakeHead.getX() + delta < snakeMovingRangeRectF.left) {
+                    delta = snakeMovingRangeRectF.left - snakeHead.getX();
                 }
             }
-            mSnakeHead.moveBy(delta, 0);
+            snakeHead.moveBy(delta, 0);
 
             mLastTouchX = event.getX();
             //            mLastTouchX = mLastTouchX + delta;
@@ -540,48 +543,75 @@ public class GameView extends BaseSurfaceViewFPS {
         return true;
     }
 
-    private synchronized void checkBlockAndBoardCollided() {
-        //        synchronized (TAG) {
-        checkupSnakePosition();
-        checkBlockCollided();
-        checkFoodCollided();
-        mSnakeHead.setLife(getSnakeBodyList().size());
-        //        }
+    private synchronized void checkBlockAndBoardCollided(SnakeHead snakeHead) {
+        if (snakeHead == null) {
+            return;
+        }
+        checkSnakeHeadMovingRangeRectF(snakeHead);
+        setupSnakePosition(snakeHead);
+        checkBlockCollided(snakeHead);
+        checkFoodCollided(snakeHead);
+        snakeHead.setLife(getSnakeBodyList().size());
     }
 
-    private synchronized void checkupSnakePosition() {
-        mSnakeHead.setMovingRangeRectFL(0);
-        mSnakeHead.setMovingRangeRectFR(mViewWidth);
+    private synchronized void checkSnakeHeadMovingRangeRectF(SnakeHead snakeHead) {
+        if (snakeHead == null) {
+            return;
+        }
+        snakeHead.setMovingRangeRectFL(0);
+        snakeHead.setMovingRangeRectFR(mViewWidth);
 
+        //        float delta = 0.5F * mCircleWH;
+        float delta = 0;
+        //        float delta = 0.03F * mBlockWH;
         /* 设置SnakeHead左右边界 */
         for (Sprite sprite : getBlockAndBoardList()) {
-            if ((mSnakeHead.getY() + mSnakeHead.getHeight()) - sprite.getY() > 2
-                    && (sprite.getY() + sprite.getHeight()) - mSnakeHead.getY() > 2) {
+            if (sprite.isDestroyed()) {
+                continue;
+            }
 
-                RectF snakeRangeRectF = mSnakeHead.getMovingRangeRectF();
-                if (sprite.getCenterX() < mSnakeHead.getCenterX()) {
+            if (sprite instanceof Block) {
+                delta = 0.5F * mCircleWH;
+            } else {
+                delta = 0.02F * mBlockWH;
+            }
+            //与某个方块接触并且在其下方
+            if (sprite instanceof Block
+                    && SpriteControl.isCollidedByTwoSprite(sprite, snakeHead)
+                    && snakeHead.getCenterX() >= sprite.getX()
+                    && snakeHead.getCenterX() <= sprite.getX() + sprite.getWidth()) {
+                continue;
+            }
+
+            if ((snakeHead.getY() + snakeHead.getHeight()) - sprite.getY() > delta
+                    && (sprite.getY() + sprite.getHeight()) - snakeHead.getY() > delta) {
+
+                RectF snakeRangeRectF = snakeHead.getMovingRangeRectF();
+                if (sprite.getCenterX() < snakeHead.getCenterX()) {
                     float rangeRectFL = Math.max(snakeRangeRectF.left, sprite.getX() + sprite.getWidth());
-                    mSnakeHead.setMovingRangeRectFL(rangeRectFL);
+                    snakeHead.setMovingRangeRectFL(rangeRectFL);
                 } else {
                     float rangeRectFR = Math.min(snakeRangeRectF.right, sprite.getX());
-                    mSnakeHead.setMovingRangeRectFR(rangeRectFR);
+                    snakeHead.setMovingRangeRectFR(rangeRectFR);
                 }
 
             }
         }
 
+
+    }
+
+    private void setupSnakePosition(SnakeHead snakeHead) {
         for (Sprite sprite : getBlockAndBoardList()) {
-            checkupSnakeBody(sprite, mSnakeHead);
+            checkupSnakeBody(sprite, snakeHead);
             for (Sprite snakeBody : getSnakeBodyList()) {
                 checkupSnakeBody(sprite, snakeBody);
             }
         }
 
-
-
         /* 根据Snake的上一个位置计算SnakeBody坐标 */
         List<Sprite> snakeBodyList = getSnakeBodyList();
-        Sprite last = mSnakeHead;
+        Sprite last = snakeHead;
         for (int i = 0; i < snakeBodyList.size(); i++) {
             Sprite current = snakeBodyList.get(i);
             current.setY(current.getY() + 0.1F * mCircleWH);
@@ -603,14 +633,14 @@ public class GameView extends BaseSurfaceViewFPS {
 
     private void checkupSnakeBody(Sprite sprite, Sprite snakeBody) {
         if (SpriteControl.isCollidedByTwoSprite(sprite, snakeBody)) {
-                    /*
-                    * 如下图所示拆分sprite
-                    *
-                    * \ 4/
-                    * 3\/1
-                    *  /\
-                    * / 2\
-                    /* 以sprite中心为原点重置snake中心坐标，再根据x=y及x=-y两条线四等分sprite，用于碰撞检查*/
+            /*
+            * 如下图所示拆分sprite
+            *
+            * \ 4/
+            * 3\/1
+            *  /\
+            * / 2\
+            /* 以sprite中心为原点重置snake中心坐标，再根据x=y及x=-y两条线四等分sprite，用于碰撞检查*/
             float cX = snakeBody.getCenterX() - sprite.getCenterX();
             //            float cY = snakeBody.getCenterY() - sprite.getCenterX();
             //            float cY = snakeBody.getCenterY() - sprite.getCenterY();
@@ -636,21 +666,21 @@ public class GameView extends BaseSurfaceViewFPS {
         }
     }
 
-    private synchronized void checkBlockCollided() {
+    private synchronized void checkBlockCollided(SnakeHead snakeHead) {
         boolean isBlockTouched = false;
         for (Sprite block : getBlockList()) {
             if (block.isDestroyed() || block.getLife() <= 0) {
                 continue;
             }
             //发生碰撞了
-            RectF snakeRectF = mSnakeHead.getCollideRectF();
-            if (SpriteControl.isCollidedByTwoSprite(mSnakeHead, block)
-                    && block.getX() <= mSnakeHead.getCenterX()
-                    && block.getX() + block.getWidth() >= mSnakeHead.getCenterX()
+            RectF snakeRectF = snakeHead.getCollideRectF();
+            if (SpriteControl.isCollidedByTwoSprite(snakeHead, block)
+                    && block.getX() <= snakeHead.getCenterX()
+                    && block.getX() + block.getWidth() >= snakeHead.getCenterX()
                     && snakeRectF.bottom >= block.getY() + block.getHeight()) {
                 isSnakeCollideWithBlock = true;
                 isBlockTouched = true;
-                if (mFrame % (int) (0.2F * mFPS) == 0) {
+                if (mFrame % (int) (0.15F * mFPS) == 0) {
                     if (!getSnakeBodyList().isEmpty()) {
                         mScore++;
                         block.deleteLife(1);
@@ -668,6 +698,10 @@ public class GameView extends BaseSurfaceViewFPS {
         }
     }
 
+    private void gameOver() {
+        mGameState = GameState.GAME_OVER;
+    }
+
     private void checkScoreAndBestScore() {
         if (mScore > mBestScore) {
             mBestScore = mScore;
@@ -675,11 +709,11 @@ public class GameView extends BaseSurfaceViewFPS {
         }
     }
 
-    private synchronized void checkFoodCollided() {
+    private synchronized void checkFoodCollided(SnakeHead snakeHead) {
         List<Sprite> foodList = getFoodList();
         for (Sprite food : foodList) {
             //发生碰撞了
-            if (SpriteControl.isCollidedByTwoSprite(mSnakeHead, food)) {
+            if (SpriteControl.isCollidedByTwoSprite(snakeHead, food)) {
                 createSnakeBody(food.getLife());
                 food.setLife(0);
                 food.destroy();
@@ -779,10 +813,6 @@ public class GameView extends BaseSurfaceViewFPS {
         return false;
     }
 
-
-    private void gameOver() {
-        mGameState = GameState.GAME_OVER;
-    }
 
     private float getDistance(Sprite last, Sprite current) {
         float _x = Math.abs(last.getX() - current.getX());
