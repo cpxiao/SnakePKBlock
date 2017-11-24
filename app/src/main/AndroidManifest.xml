@@ -33,17 +33,6 @@
             </intent-filter>
         </activity>
 
-        <!--<activity-->
-            <!--android:name=".snakepkblock.activity.GameActivity"-->
-            <!--android:screenOrientation="portrait">-->
-
-        <!--</activity>-->
-        <!--<activity-->
-            <!--android:name=".snakepkblock.activity.SettingsActivity"-->
-            <!--android:screenOrientation="portrait">-->
-
-        <!--</activity>-->
-
         <meta-data
             android:name="UMENG_APPKEY"
             android:value="597b394d8630f54543001012"/>

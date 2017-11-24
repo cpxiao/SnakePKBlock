@@ -15,27 +15,53 @@
         android:padding="30dp"
         android:text="@string/app_name"
         android:textColor="@android:color/white"
-        android:textSize="32sp"
-        />
+        android:textSize="32sp"/>
 
-    <Button
-        android:id="@+id/play"
-        style="@style/HomeBtn"
+    <LinearLayout
+        style="@style/HomeLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/play"/>
+        android:layout_height="130dp">
 
-    <Button
-        android:id="@+id/best_score"
-        style="@style/HomeBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/best_score"/>
+        <ImageButton
+            android:id="@+id/play"
+            style="@style/HomeBtn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/play"
+            android:src="@drawable/ic_play"/>
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/quit"
-        style="@style/HomeBtn"
+    <LinearLayout
+        style="@style/HomeLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/quit"/>
+        android:layout_height="80dp">
+
+        <ImageButton
+            android:id="@+id/rate_app"
+            style="@style/HomeBtn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/rate_app"
+            android:src="@drawable/ic_rate"/>
+
+        <ImageButton
+            android:id="@+id/share"
+            style="@style/HomeBtn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/share"
+            android:src="@drawable/ic_share"/>
+
+        <ImageButton
+            android:id="@+id/best_score"
+            style="@style/HomeBtn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/best_score"
+            android:src="@drawable/ic_best"/>
+
+    </LinearLayout>
 </LinearLayout>

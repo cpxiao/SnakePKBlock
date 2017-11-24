@@ -170,7 +170,6 @@ public abstract class BaseSurfaceView extends SurfaceView implements SurfaceHold
             }
         } catch (Exception e) {
             if (DEBUG) {
-                Log.d(TAG, "myDraw: e.getMessage() = " + e.getMessage());
                 e.printStackTrace();
             }
         } finally {

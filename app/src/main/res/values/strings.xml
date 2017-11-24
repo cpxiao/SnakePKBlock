@@ -4,6 +4,8 @@
     <string name="tap_to_continue">Tap to continue</string>
     <string name="tap_to_restart">Tap to restart</string>
     <string name="best">Best</string>
+    <string name="rate_app">Rate this app</string>
+    <string name="share">Share</string>
     <string name="best_score">Best Score</string>
     <string name="title_block">Block</string>
     <string name="title_pk">PK</string>
@@ -14,5 +16,5 @@
     <string name="quit_msg">Quit the Game ?</string>
     <string name="play">Play</string>
     <string name="quit">Quit</string>
-
+    <string name="share_msg">"Share an app for you."</string>
 </resources>
