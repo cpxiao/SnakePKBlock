@@ -1,10 +1,10 @@
 package com.cpxiao.androidutils.library.entity;
 
 
-import com.cpxiao.androidutils.library.utils.TimeUtils;
 import com.cpxiao.androidutils.library.constant.HttpConstants;
 import com.cpxiao.androidutils.library.utils.HttpUtils;
 import com.cpxiao.androidutils.library.utils.StringUtils;
+import com.cpxiao.androidutils.library.utils.TimeUtils;
 
 import java.util.HashMap;
 import java.util.Map;

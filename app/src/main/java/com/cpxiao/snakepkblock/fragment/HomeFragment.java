@@ -3,8 +3,11 @@ package com.cpxiao.snakepkblock.fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+
+import androidx.appcompat.app.AlertDialog;
+
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.cpxiao.R;
@@ -32,14 +35,20 @@ public class HomeFragment extends BaseZAdsFragment implements View.OnClickListen
 
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
-        loadZAds(ZAdPosition.POSITION_HOME);
+//        loadZAds(ZAdPosition.POSITION_HOME);
 
-        ImageButton play = (ImageButton) view.findViewById(R.id.play);
-        ImageButton rateApp = (ImageButton) view.findViewById(R.id.rate_app);
-        ImageButton share = (ImageButton) view.findViewById(R.id.share);
-        ImageButton bestScore = (ImageButton) view.findViewById(R.id.best_score);
+        Button easy = view.findViewById(R.id.play_easy);
+        Button normal = view.findViewById(R.id.play_normal);
+        Button hard = view.findViewById(R.id.play_hard);
+        Button insane = view.findViewById(R.id.play_insane);
+        ImageButton rateApp = view.findViewById(R.id.rate_app);
+        ImageButton share = view.findViewById(R.id.share);
+        ImageButton bestScore = view.findViewById(R.id.best_score);
 
-        play.setOnClickListener(this);
+        easy.setOnClickListener(this);
+        normal.setOnClickListener(this);
+        hard.setOnClickListener(this);
+        insane.setOnClickListener(this);
         rateApp.setOnClickListener(this);
         share.setOnClickListener(this);
         bestScore.setOnClickListener(this);
@@ -54,8 +63,21 @@ public class HomeFragment extends BaseZAdsFragment implements View.OnClickListen
     public void onClick(View v) {
         int id = v.getId();
         Context context = getHoldingActivity();
-        if (id == R.id.play) {
-            addFragment(GameFragment.newInstance(null));
+        if (id == R.id.play_easy) {
+            Bundle bundle = GameFragment.makeBundle(Extra.mode_easy);
+            addFragment(GameFragment.newInstance(bundle));
+        }
+        if (id == R.id.play_normal) {
+            Bundle bundle = GameFragment.makeBundle(Extra.mode_normal);
+            addFragment(GameFragment.newInstance(bundle));
+        }
+        if (id == R.id.play_hard) {
+            Bundle bundle = GameFragment.makeBundle(Extra.mode_hard);
+            addFragment(GameFragment.newInstance(bundle));
+        }
+        if (id == R.id.play_insane) {
+            Bundle bundle = GameFragment.makeBundle(Extra.mode_insane);
+            addFragment(GameFragment.newInstance(bundle));
         } else if (id == R.id.rate_app) {
             RateAppUtils.rate(context);
         } else if (id == R.id.share) {
@@ -69,7 +91,11 @@ public class HomeFragment extends BaseZAdsFragment implements View.OnClickListen
     }
 
     private void showBestScoreDialog(Context context) {
-        String msg = "" + PreferencesUtils.getInt(context, Extra.Key.BEST_SCORE, 0);
+        String msg = getString(R.string.easy) + ": " + Extra.getBestScore(context, Extra.mode_easy)+ "\n"
+                + getString(R.string.normal) + ": " + Extra.getBestScore(context, Extra.mode_normal)+ "\n"
+                + getString(R.string.hard) + ": " + Extra.getBestScore(context, Extra.mode_hard)+ "\n"
+                + getString(R.string.insane) + ": " + Extra.getBestScore(context, Extra.mode_insane);
+
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.best_score)
                 .setMessage(msg)

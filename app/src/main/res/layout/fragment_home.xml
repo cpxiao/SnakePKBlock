@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/fragment_home_bg"
@@ -12,23 +11,44 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="30dp"
+        android:padding="40dp"
         android:text="@string/app_name"
         android:textColor="@android:color/white"
-        android:textSize="32sp"/>
+        android:textSize="36sp" />
 
     <LinearLayout
         style="@style/HomeLayout"
         android:layout_width="match_parent"
-        android:layout_height="130dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/play"
-            style="@style/HomeBtn"
+        <Button
+            android:id="@+id/play_easy"
+            style="@style/HomeTextBtn"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/play"
-            android:src="@drawable/ic_play"/>
+            android:layout_height="60dp"
+            android:text="@string/easy" />
+
+        <Button
+            android:id="@+id/play_normal"
+            style="@style/HomeTextBtn"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/normal" />
+
+        <Button
+            android:id="@+id/play_hard"
+            style="@style/HomeTextBtn"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/hard" />
+
+        <Button
+            android:id="@+id/play_insane"
+            style="@style/HomeTextBtn"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/insane" />
     </LinearLayout>
 
     <LinearLayout
@@ -38,30 +58,30 @@
 
         <ImageButton
             android:id="@+id/rate_app"
-            style="@style/HomeBtn"
+            style="@style/HomeImageBtn"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:contentDescription="@string/rate_app"
-            android:src="@drawable/ic_rate"/>
+            android:src="@drawable/ic_rate" />
 
         <ImageButton
             android:id="@+id/share"
-            style="@style/HomeBtn"
+            style="@style/HomeImageBtn"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:contentDescription="@string/share"
-            android:src="@drawable/ic_share"/>
+            android:src="@drawable/ic_share" />
 
         <ImageButton
             android:id="@+id/best_score"
-            style="@style/HomeBtn"
+            style="@style/HomeImageBtn"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:contentDescription="@string/best_score"
-            android:src="@drawable/ic_best"/>
+            android:src="@drawable/ic_best" />
 
     </LinearLayout>
 </LinearLayout>

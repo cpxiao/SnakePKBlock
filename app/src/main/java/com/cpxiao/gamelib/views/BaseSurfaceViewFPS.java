@@ -21,7 +21,7 @@ public abstract class BaseSurfaceViewFPS extends BaseSurfaceView implements Runn
     /**
      * 设置FPS，默认为60
      */
-    protected int mFPS = 60;
+    protected final int mFPS = 60;
 
     protected long mFrame = 0;
 

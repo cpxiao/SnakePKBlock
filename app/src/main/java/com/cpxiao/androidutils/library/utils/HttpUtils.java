@@ -4,8 +4,8 @@ package com.cpxiao.androidutils.library.utils;
 import android.os.AsyncTask;
 
 import com.cpxiao.androidutils.library.constant.HttpConstants;
-import com.cpxiao.androidutils.library.entity.HttpResponse;
 import com.cpxiao.androidutils.library.entity.HttpRequest;
+import com.cpxiao.androidutils.library.entity.HttpResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;

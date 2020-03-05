@@ -33,7 +33,7 @@ public class Block extends Sprite {
         super.onDraw(canvas, paint);
 
         //        float rXY = 0.16F * getWidth();
-        float rXY = 0.05F * getWidth();
+        float rXY = 0.08F * getWidth();
         canvas.drawRoundRect(getSpriteRectF(), rXY, rXY, paint);
 
         paint.setTextSize(0.4F * getWidth());

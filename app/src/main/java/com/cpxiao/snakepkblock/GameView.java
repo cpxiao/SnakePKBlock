@@ -6,12 +6,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.support.annotation.Nullable;
-import android.util.AttributeSet;
+
 import android.view.MotionEvent;
 
 import com.cpxiao.R;
-import com.cpxiao.androidutils.library.utils.PreferencesUtils;
 import com.cpxiao.gamelib.mode.common.Sprite;
 import com.cpxiao.gamelib.mode.common.SpriteControl;
 import com.cpxiao.gamelib.views.BaseSurfaceViewFPS;
@@ -35,11 +33,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class GameView extends BaseSurfaceViewFPS {
 
+    private int mGameMode = Extra.mode_default;
+
     /**
      * 游戏状态
      */
     private enum GameState {
-        PREPARED, STARTED, PARSED, GAME_OVER
+        PREPARED,
+        STARTED,
+        PARSED,
+        GAME_OVER
     }
 
     private GameState mGameState = GameState.PREPARED;
@@ -60,10 +63,11 @@ public class GameView extends BaseSurfaceViewFPS {
      * 精灵列表
      */
     private ConcurrentLinkedQueue<Sprite> mSpriteQueue = new ConcurrentLinkedQueue<>();
-    //    private SnakeHead mSnakeHead;
+
     private volatile SnakeHead mSnakeHead;
 
-    private static final int mBlockCount = 5;
+    private static final int mSnakeBodyStartCount = 8;
+    private static int mBlockCount = 5;
     private float mCircleWH;
     private float mBlockWH;
     private float mBoardW;
@@ -72,17 +76,23 @@ public class GameView extends BaseSurfaceViewFPS {
 
     private RectF mCanvasRectF;
 
+    public GameView(Context context, int gameMode) {
+        this(context);
+        mBlockCount = gameMode;
+        mGameMode = gameMode;
+    }
+
     public GameView(Context context) {
         super(context);
     }
 
-    public GameView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public GameView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
+//    public GameView(Context context, @Nullable AttributeSet attrs) {
+//        super(context, attrs);
+//    }
+//
+//    public GameView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+//        super(context, attrs, defStyleAttr);
+//    }
 
     private void restart() {
         mGameState = GameState.PREPARED;
@@ -93,7 +103,6 @@ public class GameView extends BaseSurfaceViewFPS {
      */
     public void pause() {
         if (mGameState == GameState.STARTED) {
-
             mGameState = GameState.PARSED;
         }
     }
@@ -102,7 +111,6 @@ public class GameView extends BaseSurfaceViewFPS {
      * 将游戏设置为运行状态
      */
     private void resume() {
-
         mGameState = GameState.STARTED;
         postInvalidate();
     }
@@ -120,15 +128,14 @@ public class GameView extends BaseSurfaceViewFPS {
         mCircleWH = 0.05F * mViewWidth;
         mBoardW = 0.015F * mViewWidth;
 
-        mBestScore = PreferencesUtils.getInt(getContext(), Extra.Key.BEST_SCORE, 0);
-
+        mBestScore = Extra.getBestScore(getContext(), mGameMode);
 
         //初始化snake初始目标位置
         mSnakeTargetX = 0.5F * mViewWidth;
         mSnakeTargetY = 0.6F * mViewHeight;
+//        mSnakeTargetY = 0.8F * mViewHeight;
 
         mCanvasRectF = new RectF(0, 0, mViewWidth, mViewHeight);
-
 
     }
 
@@ -144,28 +151,33 @@ public class GameView extends BaseSurfaceViewFPS {
         if (mGameState == GameState.PREPARED) {
             mScore = 0;
             //初始化速度
-            mSpeedY = 0.5F * mViewHeight / mFPS;
+            mSpeedY = 0.4F * mViewHeight / mFPS;
             isSnakeCollideWithBlock = false;
 
             mSpriteQueue.clear();
             //初始化蛇
             createSnakeHead();
-            createSnakeBody(5);
+
             if (DEBUG) {
-                createSnakeBody(50);
+                createSnakeBody(5);
+            } else {
+                createSnakeBody(mSnakeBodyStartCount);
             }
             drawPrepared(mCanvasCache, mPaint);
         } else if (mGameState == GameState.STARTED) {
+            // 每十秒速度增加
             if (mFrame % (10 * mFPS) == 0) {
-                mSpeedY += 0.2F;
+                mSpeedY *= 1.01F;
                 for (Sprite sprite : mSpriteQueue) {
                     sprite.setSpeedY(mSpeedY);
                 }
             }
             //随机添加Sprite
             if (!isSnakeCollideWithBlock) {
-                createBlockAndFood();
-                createBoard();
+                boolean isBlockCreateSuccess = createBlockAndFood();
+                if (isBlockCreateSuccess) {
+                    createBoard();
+                }
             }
             drawStarted(mCanvasCache, mPaint);
         } else if (mGameState == GameState.PARSED) {
@@ -261,6 +273,11 @@ public class GameView extends BaseSurfaceViewFPS {
         //绘制标题
         drawTitle(canvas, paint);
 
+        // 绘制游戏模式文本
+        paint.setTextSize(0.06F * mViewWidth);
+        String gameModeStr = Extra.getGameModeStr(getContext(), mGameMode);
+        canvas.drawText(gameModeStr, 0.5f * mViewWidth, 0.45F * mViewHeight, paint);
+
         //绘制最高分
         paint.setTextSize(0.06F * mViewWidth);
         String best = getResources().getString(R.string.best_score) + ": " + mBestScore;
@@ -273,7 +290,7 @@ public class GameView extends BaseSurfaceViewFPS {
 
     private void drawStarted(Canvas canvas, Paint paint) {
         drawSprite(canvas, paint, false);
-        drawScore(canvas, paint);
+        drawTitleBarScore(canvas, paint);
     }
 
     private void drawParsed(Canvas canvas, Paint paint) {
@@ -282,7 +299,7 @@ public class GameView extends BaseSurfaceViewFPS {
         drawScoreAndBestScoreView(canvas, mScore, mBestScore, paint);
         drawButton(canvas, getResources().getString(R.string.tap_to_start), paint);
 
-        drawScore(canvas, paint);
+//        drawTitleBarScore(canvas, paint);
     }
 
     private void drawGameOver(Canvas canvas, Paint paint) {
@@ -292,31 +309,40 @@ public class GameView extends BaseSurfaceViewFPS {
         drawContinueButton(canvas, getContext().getString(R.string.tap_to_continue), paint);
         drawButton(canvas, getContext().getString(R.string.tap_to_restart), paint);
 
-        drawScore(canvas, paint);
+//        drawTitleBarScore(canvas, paint);
     }
 
 
-    private void drawScore(Canvas canvas, Paint paint) {
+    private void drawTitleBarScore(Canvas canvas, Paint paint) {
+
+        // 绘制游戏模式文本
         paint.setColor(Color.WHITE);
-        //绘制title
-        float cX = 0.5f * mViewWidth;
-        paint.setTextSize(0.1F * mViewWidth);
+        paint.setTextSize(0.06F * mViewWidth);
+        String gameModeStr = Extra.getGameModeStr(getContext(), mGameMode);
+        canvas.drawText(gameModeStr, 0.5f * mViewWidth, 0.05F * mViewHeight, paint);
+
+
+        //绘制得分
+        paint.setTextSize(0.15F * mViewWidth);
         paint.setTypeface(Typeface.DEFAULT);
         String text = "" + mScore;
-        canvas.drawText(text, cX, 0.05F * mViewHeight, paint);
+        canvas.drawText(text, 0.5f * mViewWidth, 0.15F * mViewHeight, paint);
+
+
     }
 
     private void drawTitle(Canvas canvas, Paint paint) {
         paint.setColor(Color.WHITE);
         //绘制title
         float cX = 0.5f * mViewWidth;
-        paint.setTextSize(0.16F * mViewWidth);
+        paint.setTextSize(0.15F * mViewWidth);
         paint.setTypeface(Typeface.DEFAULT);
         canvas.drawText(getContext().getString(R.string.title_snake), cX, 0.12F * mViewHeight, paint);
         paint.setTypeface(Typeface.DEFAULT_BOLD);
         canvas.drawText(getContext().getString(R.string.title_pk), cX, 0.24F * mViewHeight, paint);
         paint.setTypeface(Typeface.DEFAULT);
         canvas.drawText(getContext().getString(R.string.title_block), cX, 0.36F * mViewHeight, paint);
+
     }
 
     /**
@@ -326,22 +352,30 @@ public class GameView extends BaseSurfaceViewFPS {
         paint.setColor(Color.WHITE);
         paint.setAlpha(232);
         RectF rectF = new RectF();
-        float w = 0.4f * mViewWidth;
-        float h = 1.0f * w;
+        float w = 0.5f * mViewWidth;
+        float h = 0.88f * w;
         rectF.left = 0.5F * (mViewWidth - w);
         rectF.right = rectF.left + w;
-        rectF.top = 0.1f * mViewHeight;
+        rectF.top = 0.2f * mViewHeight;
         rectF.bottom = rectF.top + h;
         canvas.drawRoundRect(rectF, 0.1F * rectF.width(), 0.1F * rectF.height(), paint);
 
+        // 绘制游戏模式String
         paint.setColor(Color.BLACK);
-        paint.setTextSize(0.3f * rectF.width());
-        canvas.drawText(String.valueOf(score), rectF.centerX(), rectF.top + 0.5F * rectF.height(), paint);
+        paint.setTextSize(0.12f * rectF.width());
+        canvas.drawText(Extra.getGameModeStr(getContext(), mGameMode), rectF.centerX(), rectF.top + 0.2F * rectF.height(), paint);
 
+
+        // 绘制得分
         paint.setColor(Color.BLACK);
-        paint.setTextSize(0.15f * rectF.width());
-        String best = getResources().getString(R.string.best) + ": " + bestScore;
-        canvas.drawText(best, rectF.centerX(), rectF.top + 0.8F * rectF.height(), paint);
+        paint.setTextSize(0.35f * rectF.width());
+        canvas.drawText(String.valueOf(score), rectF.centerX(), rectF.top + 0.6F * rectF.height(), paint);
+
+        // 绘制最高分
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(0.08f * rectF.width());
+        String best = getResources().getString(R.string.best_score) + ": " + bestScore;
+        canvas.drawText(best, rectF.centerX(), rectF.top + 0.82F * rectF.height(), paint);
         paint.setAlpha(255);
     }
 
@@ -375,26 +409,41 @@ public class GameView extends BaseSurfaceViewFPS {
         }
         paint.setTextAlign(Paint.Align.CENTER);
         mPaint.setAntiAlias(true);//抗锯齿
-        paint.setTextSize(0.06F * mViewWidth);
+        paint.setTextSize(0.08F * mViewWidth);
         paint.setColor(Color.WHITE);
         paint.setAlpha((int) (255 * tmp / frequency));
-        canvas.drawText(text, 0.5F * mViewWidth, 0.8f * mViewHeight, paint);
+        canvas.drawText(text, 0.5F * mViewWidth, 0.78f * mViewHeight, paint);
     }
+
+
+    private int createSnakeBodyIndex = 0;
 
     @Override
     protected void timingLogic() {
+        if (needCreateBodyCount > 0) {
+            // 0.5秒创建一个
+            if (createSnakeBodyIndex > 0.1f * mFPS) {
+                createSnakeBodyIndex = 0;
 
+                createSnakeBody(1);
+                needCreateBodyCount--;
+            } else {
+                createSnakeBodyIndex++;
+            }
+        }
     }
 
     private void createSnakeHead() {
         mSnakeHead = (SnakeHead) new SnakeHead.Build()
                 .setX(mSnakeTargetX)
-                .setY(mSnakeTargetY + 100)
+                .setY(mSnakeTargetY + mCircleWH * 5)
                 .setW(mCircleWH)
                 .setH(mCircleWH)
                 .setMovingRangeRectF(new RectF(0, 0, mViewWidth, mViewHeight))
                 .build();
     }
+
+    private int needCreateBodyCount = 0;
 
     private synchronized void createSnakeBody(int life) {
         if (life < 0 || mSnakeHead == null) {
@@ -403,7 +452,7 @@ public class GameView extends BaseSurfaceViewFPS {
         for (int i = 0; i < life; i++) {
             SnakeBody snakeBody = (SnakeBody) new SnakeBody.Build()
                     .setX(mSnakeHead.getX())
-                    .setY(mSnakeHead.getY())
+                    .setY(mSnakeHead.getY() + 3000)
                     .setW(mCircleWH)
                     .setH(mCircleWH)
                     .build();
@@ -411,59 +460,71 @@ public class GameView extends BaseSurfaceViewFPS {
         }
     }
 
-    private float mBlockAndFoodDeltaY = 0;
-    private float mLastBlockAndFoodY = 0;
+    private float mNextBlockAndFoodDeltaY = 0;
+    private float mPreBlockAndFoodY = 0;
 
-    private void createBlockAndFood() {
-        if (mLastBlockAndFoodY < mBlockAndFoodDeltaY) {
-            mLastBlockAndFoodY += mSpeedY;
-            return;
+    /***
+     * 创建方块和食物
+     * @return boolean
+     */
+    private boolean createBlockAndFood() {
+        if (mPreBlockAndFoodY < mNextBlockAndFoodDeltaY) {
+            mPreBlockAndFoodY += mSpeedY;
+            return false;
         }
-        mLastBlockAndFoodY = 0;
-        mBlockAndFoodDeltaY = mBlockWH * (int) (2 + Math.random() * 2);
+        mPreBlockAndFoodY = 0;
+        mNextBlockAndFoodDeltaY = mBlockWH * (int) (2 + Math.random() * 2);
 
 
-        float blockProbability = 0.5F;
+        float blockProbability = 0.6F;
         float circleProbability = 0.1F;
         for (int i = 0; i < mBlockCount; i++) {
             double random = Math.random();
+            float centerY;
+            if (Math.random() < 0.05) {
+                centerY = -1.5f * mBlockWH;
+            } else {
+                centerY = -0.5f * mBlockWH;
+            }
             if (random < blockProbability) {
-                int age = (int) (Math.random() * 10 + Math.random() * Math.max(getSnakeBodyList().size(), 20) / 3);
+                int life = (int) (Math.random() * 10
+                        + Math.random() * Math.max(0.35f * getSnakeBodyList().size(), 8));
+
                 Block block = (Block) new Block.Build()
                         .setW(mBlockWH)
                         .setH(mBlockWH)
                         .centerTo((0.5f + i) * mBlockWH, -0.5f * mBlockWH)
                         .setSpeedY(mSpeedY)
-                        .setLife(age)
+                        .setLife(life)
                         .build();
                 mSpriteQueue.add(block);
             } else if (random < blockProbability + circleProbability) {
-                int age = (int) (Math.random() * 5) + 1;
+                int age = (int) (Math.random() * 5) + 2;
                 Food food = (Food) new Food.Build()
                         .setW(mCircleWH)
                         .setH(mCircleWH)
-                        .centerTo((0.5f + i) * mBlockWH, -0.5f * mBlockWH)
+                        .centerTo((0.5f + i) * mBlockWH, centerY)
                         .setSpeedY(mSpeedY)
                         .setLife(age)
                         .build();
                 mSpriteQueue.add(food);
             }
         }
+        return true;
     }
 
-    private float mBoardDeltaY = 0;
-    private float mLastBoardY = 0;
 
+    /**
+     * * 创建障碍挡板
+     */
     private void createBoard() {
-        if (mLastBoardY < mBoardDeltaY) {
-            mLastBoardY += mSpeedY;
+        if (Math.random() >= 0.8f) {
             return;
         }
-        mLastBoardY = 0;
-        mBoardDeltaY = mBlockWH * (int) (2 + Math.random() * 2);
 
-        float board1Probability = 0.6F;
-        float board2Probability = 0.2F;
+        float board1Probability = 0.4F;
+        float board2Probability = 0.1F;
+        float board3Probability = 0.05F;
         for (int i = 0; i < mBlockCount; i++) {
             double random = Math.random();
             int index = (int) (Math.random() * 100 % (mBlockCount - 1));
@@ -473,6 +534,8 @@ public class GameView extends BaseSurfaceViewFPS {
                 height = 1;
             } else if (random < board1Probability + board2Probability) {
                 height = 2;
+            } else if (random < board1Probability + board2Probability + board3Probability) {
+                height = 3;
             } else {
                 return;
             }
@@ -611,23 +674,23 @@ public class GameView extends BaseSurfaceViewFPS {
 
         /* 根据Snake的上一个位置计算SnakeBody坐标 */
         List<Sprite> snakeBodyList = getSnakeBodyList();
-        Sprite last = snakeHead;
+        Sprite preBody = snakeHead;
         for (int i = 0; i < snakeBodyList.size(); i++) {
-            Sprite current = snakeBodyList.get(i);
-            current.setY(current.getY() + 0.1F * mCircleWH);
-            //            current.setY(last.getY() + 0.1F * mCircleWH);
-            float distance = getDistance(last, current);
+            Sprite currentBody = snakeBodyList.get(i);
+            currentBody.setY(currentBody.getY() + 0.1F * mCircleWH);
+            //            currentBody.setY(preBody.getY() + 0.1F * mCircleWH);
+            float distance = getDistance(preBody, currentBody);
             float length = distance / (mCircleWH);
 
 
             if (length > 0) {
-                current.setX(last.getX() + (current.getX() - last.getX()) / length);
-                current.setY(last.getY() + (current.getY() - last.getY()) / length);
+                currentBody.setX(preBody.getX() + (currentBody.getX() - preBody.getX()) / length);
+                currentBody.setY(preBody.getY() + (currentBody.getY() - preBody.getY()) / length);
             } else {
-                current.setY(last.getY() + mCircleWH);
-                current.setX(last.getX());
+                currentBody.setY(preBody.getY() + mCircleWH);
+                currentBody.setX(preBody.getX());
             }
-            last = current;
+            preBody = currentBody;
         }
     }
 
@@ -705,7 +768,7 @@ public class GameView extends BaseSurfaceViewFPS {
     private void checkScoreAndBestScore() {
         if (mScore > mBestScore) {
             mBestScore = mScore;
-            PreferencesUtils.putInt(getContext(), Extra.Key.BEST_SCORE, mScore);
+            Extra.setBestScore(getContext(), mGameMode, mBestScore);
         }
     }
 
@@ -714,7 +777,8 @@ public class GameView extends BaseSurfaceViewFPS {
         for (Sprite food : foodList) {
             //发生碰撞了
             if (SpriteControl.isCollidedByTwoSprite(snakeHead, food)) {
-                createSnakeBody(food.getLife());
+                needCreateBodyCount += food.getLife();
+//                createSnakeBody(food.getLife());
                 food.setLife(0);
                 food.destroy();
                 break;

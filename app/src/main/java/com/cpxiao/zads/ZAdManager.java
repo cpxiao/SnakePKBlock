@@ -1,7 +1,7 @@
 package com.cpxiao.zads;
 
 import android.content.Context;
-import android.support.v4.util.ArrayMap;
+import androidx.collection.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;

@@ -2,10 +2,12 @@ package com.cpxiao.snakepkblock.fragment;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.cpxiao.R;
 import com.cpxiao.gamelib.fragment.BaseZAdsFragment;
 import com.cpxiao.snakepkblock.GameView;
+import com.cpxiao.snakepkblock.mode.extra.Extra;
 import com.cpxiao.zads.core.ZAdPosition;
 
 /**
@@ -26,9 +28,18 @@ public class GameFragment extends BaseZAdsFragment {
 
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
-        loadZAds(ZAdPosition.POSITION_GAME);
+//        loadZAds(ZAdPosition.POSITION_GAME);
 
-        mGameView = (GameView) view.findViewById(R.id.game_view);
+        LinearLayout layout = view.findViewById(R.id.game_view_layout);
+
+        int gameMode = Extra.mode_default;
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            gameMode = bundle.getInt(Extra.Name.GAME_MODE, Extra.mode_default);
+        }
+        mGameView = new GameView(getContext(), gameMode);
+
+        layout.addView(mGameView);
     }
 
     @Override
@@ -51,6 +62,12 @@ public class GameFragment extends BaseZAdsFragment {
             mGameView.destroy();
         }
 
+    }
+
+    public static Bundle makeBundle(int gameMode) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(Extra.Name.GAME_MODE, gameMode);
+        return bundle;
     }
 
 }

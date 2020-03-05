@@ -23,8 +23,8 @@ import com.umeng.analytics.MobclickAgent;
 /**
  * @author cpxiao on 2017/3/1.
  * @version cpxiao on 2017/3/17   更新打印log信息
- *          cpxiao on 2017/8/24   提取test device
- *          cpxiao on 2017/8/31   修改继承类
+ * cpxiao on 2017/8/24   提取test device
+ * cpxiao on 2017/8/31   修改继承类
  */
 public abstract class BaseAdsActivity extends BaseAppActivity {
     protected final String TEST_DEVICE_FB = AppConfig.TEST_DEVICE_FB;
@@ -77,7 +77,7 @@ public abstract class BaseAdsActivity extends BaseAppActivity {
         initAdMobAds(placementId, com.google.android.gms.ads.AdSize.MEDIUM_RECTANGLE);
     }
 
-    private void initAdMobAds(String unitId, com.google.android.gms.ads.AdSize adSize) {
+    private void initAdMobAds(final String unitId, final com.google.android.gms.ads.AdSize adSize) {
         if (DEBUG) {
             Log.d(TAG, "initAdMobAds: ");
         }
@@ -131,7 +131,7 @@ public abstract class BaseAdsActivity extends BaseAppActivity {
             public void onAdLoaded() {
                 super.onAdLoaded();
                 if (DEBUG) {
-                    Log.d(TAG, "AdMob -> " + "onAdLoaded: ");
+                    Log.d(TAG, "AdMob -> " + "onAdLoaded: " + adSize);
                 }
                 addToLayout(mAdMobAdView);
             }
@@ -230,14 +230,14 @@ public abstract class BaseAdsActivity extends BaseAppActivity {
 
     private void addToLayout(View view) {
         if (DEBUG) {
-            Log.d(TAG, "addToLayout: ");
+            Log.d(TAG, "addToLayout: view = " + view);
         }
         if (view == null) {
             return;
         }
         removeFromParent(view);
 
-        LinearLayout layout = (LinearLayout) findViewById(R.id.layout_ads);
+        LinearLayout layout = findViewById(R.id.layout_ads);
         layout.removeAllViews();
         layout.addView(view);
     }

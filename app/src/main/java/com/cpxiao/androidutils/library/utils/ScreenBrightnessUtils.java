@@ -88,7 +88,7 @@ public class ScreenBrightnessUtils {
         ContentResolver resolver = context.getContentResolver();
 
         try {
-            nowBrightnessValue = android.provider.Settings.System.getInt(resolver, Settings.System.SCREEN_BRIGHTNESS);
+            nowBrightnessValue = Settings.System.getInt(resolver, Settings.System.SCREEN_BRIGHTNESS);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -152,8 +152,8 @@ public class ScreenBrightnessUtils {
             return;
         }
         //保存为系统亮度方法1
-        android.provider.Settings.System.putInt(context.getContentResolver(),
-                android.provider.Settings.System.SCREEN_BRIGHTNESS,
+        Settings.System.putInt(context.getContentResolver(),
+                Settings.System.SCREEN_BRIGHTNESS,
                 brightness);
 
         //        //保存为系统亮度方法2
